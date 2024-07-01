@@ -1,0 +1,12 @@
+aws_region           = "us-east-1"
+azs                  = ["us-east-1a", "us-east-1b", "us-east-1c"]
+vpc_cidr             = "10.39.0.0/16"
+vpc_name             = "Ansible-worker"
+public_subnet_cidrs  = ["10.39.1.0/24", "10.39.2.0/24", "10.38.3.0/24"]
+private_subnet_cidrs = ["10.39.10.0/24", "10.39.20.0/24", "10.38.30.0/24"]
+environment          = "dev"
+owner                = "Batch B39"
+imagename            = "ami-04b70fa74e45c3917"
+instance_type        = "t2.micro"
+key_name             = "mainkey"
+projid               = "PHOENIX-123"
