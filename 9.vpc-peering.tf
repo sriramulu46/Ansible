@@ -1,11 +1,14 @@
 data "aws_vpc" "ansible_vpc" {
-  id = "vpc-0eac6d4d55868caa8"
+  id = "vpc-0bd6ce7dcbbfa3ce0"
 }
 
 data "aws_route_table" "ansible_vpc_rt" {
-  subnet_id = "subnet-0d124b5eb12011584"
-  #If subnet_id giving errors use route table id as below
-  #route_table_id = data.aws_route_table.ansible_vpc_rt.id
+  vpc_id = var.vpc_id # Make sure this variable is correctly defined
+
+  filter {
+    name   = "tag:Name"
+    values = ["ansible-vpc-rt"] # Adjust this tag as necessary
+  }
 }
 
 resource "aws_vpc_peering_connection" "ansible-vpc-peering" {
@@ -26,17 +29,17 @@ resource "aws_vpc_peering_connection" "ansible-vpc-peering" {
 }
 
 resource "aws_route" "peering-to-ansible-vpc" {
-  route_table_id            = aws_route_table.terraform-public.id
-  destination_cidr_block    = data.aws_vpc.ansible_vpc.cidr_block
+  route_table_id         = aws_route_table.terraform-public.id
+  destination_cidr_block = data.aws_vpc.ansible_vpc.cidr_block
   #"10.40.0.0/16"
   vpc_peering_connection_id = aws_vpc_peering_connection.ansible-vpc-peering.id
-  #depends_on                = [aws_route_table.terraform-public]
+  depends_on                = [aws_route_table.terraform-public]
 }
 
 resource "aws_route" "peering-from-ansible-vpc" {
-  route_table_id            = data.aws_route_table.ansible_vpc_rt.id
-  destination_cidr_block    = aws_vpc.default.cidr_block 
+  route_table_id         = data.aws_route_table.ansible_vpc_rt.id
+  destination_cidr_block = aws_vpc.default.cidr_block
   #"10.38.0.0/16"
   vpc_peering_connection_id = aws_vpc_peering_connection.ansible-vpc-peering.id
-  #depends_on                = [aws_route_table.terraform-public]
+  depends_on                = [aws_route_table.terraform-public]
 }
